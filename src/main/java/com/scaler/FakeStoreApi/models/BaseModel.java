@@ -7,7 +7,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class BaseModel {
-    private Long productId;
+    private Long id;
     private Date createdAt;
     private Date lastUpdatedAt;
     private boolean isDeleted;

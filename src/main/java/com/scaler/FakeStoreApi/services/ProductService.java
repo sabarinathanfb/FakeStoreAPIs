@@ -1,20 +1,28 @@
 package com.scaler.FakeStoreApi.services;
 
-import com.scaler.FakeStoreApi.dtos.ProudctDTO;
-import org.springframework.web.bind.annotation.*;
+import com.scaler.FakeStoreApi.dtos.ProductDTO;
+import com.scaler.FakeStoreApi.models.Product;
+
+import java.util.List;
 
 public interface ProductService {
 
-    String getAllProducts();
+    List<Product> getAllProducts();
 
-    String getProductById(Long Id);
-
-
-    String addNewProduct(ProudctDTO productsDTO);
+    Product getSingleProduct(Long productId);
 
 
-    String UpdateProduct(Long productId);
+    Product addNewProduct(ProductDTO product);
 
 
-    String DeleteProduct(Long productId);
+    Product UpdateProduct(Long productId, Product product);
+
+
+    boolean DeleteProduct(Long productId);
+
 }
+
+/** update product wit id 123
+ * name : iPhone 15
+ * desc:
+ */
