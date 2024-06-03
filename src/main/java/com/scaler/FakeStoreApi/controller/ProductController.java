@@ -1,11 +1,10 @@
 package com.scaler.FakeStoreApi.controller;
 
-import com.scaler.FakeStoreApi.dtos.GetSingleProductResponseDTO;
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
 import com.scaler.FakeStoreApi.models.Product;
+import com.scaler.FakeStoreApi.repositories.ProductRepository;
 import com.scaler.FakeStoreApi.services.ProductService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,13 +16,16 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    private ProductService productService;
+    private final ProductService productService;
+    private ProductRepository productRepository;
 
-    public ProductController(ProductService productService) {
 
+    public ProductController(ProductService productService,ProductRepository productRepository) {
         this.productService = productService;
+        this.productRepository = productRepository;
 
     }
+
 
     @GetMapping("")
     public List<Product> getAllProducts() {
@@ -37,28 +39,32 @@ public class ProductController {
         headers.add("auth-token","dawdjkajwdlncad");
 
 
-        ResponseEntity<Product> response = new ResponseEntity<>(
+        return new ResponseEntity<>(
                 productService.getSingleProduct(productId),
                 headers,
                 HttpStatus.NOT_FOUND
         );
-
-
-        return  response;
     }
 
     @PostMapping("")
     public ResponseEntity<Product> addNewProduct(@RequestBody ProductDTO product) {
 
-        Product newProduct = productService.addNewProduct(
-                product
-        );
-        ResponseEntity<Product> response = new ResponseEntity<>(
+//        Product newProduct = productService.addNewProduct(
+//                product
+//        );
+
+        Product newProduct = new Product();
+        newProduct.setDescription(product.getDescription());
+        newProduct.setPrice(product.getPrice());
+        newProduct.setTitle(product.getTitle());
+        newProduct.setImageUrl(product.getImage());
+
+        newProduct = productRepository.save(newProduct);
+
+        return new ResponseEntity<>(
                 newProduct,
                 HttpStatus.CREATED
         );
-
-        return response;
     }
 
     @PutMapping("/{productId}")
