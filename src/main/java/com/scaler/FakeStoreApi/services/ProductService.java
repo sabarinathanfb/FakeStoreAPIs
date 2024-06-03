@@ -15,10 +15,12 @@ public interface ProductService {
     Product addNewProduct(ProductDTO product);
 
 
-    Product UpdateProduct(Long productId, Product product);
+    Product updateProduct(Long productId, Product product);
+
+    Product replaceProduct(Long productId, ProductDTO product);
 
 
-    boolean DeleteProduct(Long productId);
+    boolean deleteProduct(Long productId);
 
 }
 

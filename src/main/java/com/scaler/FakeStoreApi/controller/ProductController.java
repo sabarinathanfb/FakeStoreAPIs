@@ -1,6 +1,7 @@
 package com.scaler.FakeStoreApi.controller;
 
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
+import com.scaler.FakeStoreApi.models.Category;
 import com.scaler.FakeStoreApi.models.Product;
 import com.scaler.FakeStoreApi.repositories.ProductRepository;
 import com.scaler.FakeStoreApi.services.ProductService;
@@ -67,9 +68,18 @@ public class ProductController {
         );
     }
 
-    @PutMapping("/{productId}")
-    public String UpdateProduct(@PathVariable  Long productId, ProductDTO productsDTO) {
-        return "Product updated";
+    @PatchMapping("/{productId}")
+    public Product updateProduct(@PathVariable("productId") Long productId,
+                                @RequestBody ProductDTO productDTO) {
+        Product product = new Product();
+        product.setId(productDTO.getId());
+        product.setCategory(new Category());
+        product.getCategory().setCategoryName(productDTO.getCategory());
+        product.setTitle(productDTO.getTitle());
+        product.setPrice(productDTO.getPrice());
+        product.setDescription(productDTO.getDescription());
+
+        return productService.updateProduct(productId, product);
     }
 
     @DeleteMapping("/{productId}")
