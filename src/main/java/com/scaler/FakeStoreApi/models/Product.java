@@ -1,6 +1,7 @@
 package com.scaler.FakeStoreApi.models;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,8 @@ public class Product extends BaseModel {
     // 1 -> 1
     // M <- 1
     // M : 1
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST})
     private Category category;
     private String imageUrl;
+    private boolean isPublic;
 }
