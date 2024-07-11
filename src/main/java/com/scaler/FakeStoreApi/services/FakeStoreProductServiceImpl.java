@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FakeStoreProductServiceImpl implements ProductService{
@@ -78,7 +79,7 @@ public class FakeStoreProductServiceImpl implements ProductService{
 
 
     @Override
-    public Product getSingleProduct(Long productId) {
+    public Optional<Product> getSingleProduct(Long productId) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ResponseEntity<FakeStoreProductDTO> response = restTemplate.getForEntity(
                 "https://fakestoreapi.com/products/{1}",
@@ -89,7 +90,7 @@ public class FakeStoreProductServiceImpl implements ProductService{
 
 
 
-        return convertFakeStoreProductDTOToProduct(productDTO);
+        return Optional.of(convertFakeStoreProductDTOToProduct(productDTO));
     }
 
     @Override

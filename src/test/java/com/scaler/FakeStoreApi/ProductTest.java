@@ -69,4 +69,9 @@ public class ProductTest {
         }
     }
 
+    @Test
+    public void demonstrateCustomQueries(){
+        List<Product> products = productRepository.getByIdAndTitle(102L,"hi");
+    }
+
 }

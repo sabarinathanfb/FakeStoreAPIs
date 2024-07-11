@@ -1,15 +1,18 @@
 package com.scaler.FakeStoreApi.services;
 
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
+import com.scaler.FakeStoreApi.exceptions.NotFoundException;
 import com.scaler.FakeStoreApi.models.Product;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductService {
 
     List<Product> getAllProducts();
 
-    Product getSingleProduct(Long productId);
+
+    Optional<Product> getSingleProduct(Long productId) throws NotFoundException;
 
 
     Product addNewProduct(ProductDTO product);

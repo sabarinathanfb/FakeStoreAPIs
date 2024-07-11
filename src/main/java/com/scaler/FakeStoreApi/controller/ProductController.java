@@ -1,6 +1,7 @@
 package com.scaler.FakeStoreApi.controller;
 
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
+import com.scaler.FakeStoreApi.exceptions.NotFoundException;
 import com.scaler.FakeStoreApi.models.Category;
 import com.scaler.FakeStoreApi.models.Product;
 import com.scaler.FakeStoreApi.repositories.ProductRepository;
@@ -12,13 +13,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
 
     public ProductController(ProductService productService,ProductRepository productRepository) {
@@ -34,17 +36,26 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getSingleProduct(@PathVariable Long productId) {
+    public ResponseEntity<Product> getSingleProduct(@PathVariable Long productId) throws NotFoundException {
 
         MultiValueMap<String,String> headers = new LinkedMultiValueMap<>();
         headers.add("auth-token","dawdjkajwdlncad");
 
+        Optional<Product> productOptional = productService.getSingleProduct(productId);
 
-        return new ResponseEntity<>(
+        if (productOptional.isEmpty()) {
+            throw new NotFoundException("No Product with product id: " + productId);
+        }
+
+        ResponseEntity<Product> response = new ResponseEntity(
                 productService.getSingleProduct(productId),
                 headers,
                 HttpStatus.NOT_FOUND
         );
+
+        return response;
+
+
     }
 
     @PostMapping("")
