@@ -20,7 +20,6 @@ public interface ProductService {
 
     Product updateProduct(Long productId, Product product);
 
-    Product replaceProduct(Long productId, ProductDTO product);
 
 
     boolean deleteProduct(Long productId);

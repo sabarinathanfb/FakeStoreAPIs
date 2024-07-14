@@ -1,9 +1,6 @@
 package com.scaler.FakeStoreApi.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
 
@@ -15,7 +12,23 @@ public class BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdatedAt;
     private boolean isDeleted;
+
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = new Date();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastUpdatedAt = new Date();
+    }
+
 }

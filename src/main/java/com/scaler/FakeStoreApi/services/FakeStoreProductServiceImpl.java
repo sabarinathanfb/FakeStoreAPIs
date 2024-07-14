@@ -139,11 +139,6 @@ public class FakeStoreProductServiceImpl implements ProductService{
         return convertFakeStoreProductDTOToProduct(fakeStoreProductDtoResponseEntity.getBody());
     }
 
-    @Override
-    public Product replaceProduct(Long productId, ProductDTO product) {
-
-        return null;
-    }
 
     @Override
     public boolean deleteProduct(Long productId) {

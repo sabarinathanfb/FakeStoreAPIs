@@ -1,5 +1,6 @@
 package com.scaler.FakeStoreApi.services;
 
+import com.scaler.FakeStoreApi.Mapper.ProductMapper;
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
 import com.scaler.FakeStoreApi.exceptions.NotFoundException;
 import com.scaler.FakeStoreApi.models.Product;
@@ -7,6 +8,8 @@ import com.scaler.FakeStoreApi.repositories.ProductRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +26,7 @@ public class SelfProductService implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        return List.of();
+        return productRepository.findAll();
     }
 
     @Override
@@ -38,19 +41,35 @@ public class SelfProductService implements ProductService {
     }
 
     @Override
-    public Product addNewProduct(ProductDTO product) {
-        return null;
+    public Product addNewProduct(ProductDTO product){
+
+
+        return productRepository.save(ProductMapper.toProduct(product));
+
     }
 
     @Override
     public Product updateProduct(Long productId, Product product) {
-        return null;
+
+        Product updatedProduct = productRepository.findProductById(productId);
+        if (updatedProduct == null) {
+            return null;
+        }
+
+        updatedProduct.setTitle(product.getTitle());
+        updatedProduct.setDescription(product.getDescription());
+        updatedProduct.setPrice(product.getPrice());
+        updatedProduct.setImageUrl(product.getImageUrl());
+        updatedProduct.setCategory(product.getCategory());
+        updatedProduct.setLastUpdatedAt(Date.from(Instant.now()));
+
+        return productRepository.save(updatedProduct);
+
+
+
+
     }
 
-    @Override
-    public Product replaceProduct(Long productId, ProductDTO product) {
-        return null;
-    }
 
     @Override
     public boolean deleteProduct(Long productId) {

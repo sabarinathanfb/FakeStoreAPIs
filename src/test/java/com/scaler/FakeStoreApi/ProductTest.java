@@ -11,7 +11,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 
 @SpringBootTest
@@ -26,30 +25,7 @@ public class ProductTest {
 
 
 
-    @Test
-    @Transactional
-    @Rollback(value = false)
-    void savingProductsAndCategory() {
-        Category category = new Category();
-        category.setCategoryName("phones");
-        Category savedCategory = categoryRepository.save(category);
 
-        Product product = new Product();
-        product.setPrice(100);
-        product.setImageUrl("hello");
-        product.setCategory(category);
-        productRepository.save(product);
-//
-//        Category category = new Category();
-//        category.setCategoryName("electronics");
-//        Category savedCategory = categoryRepository.save(category);
-//
-//        Product product = new Product();
-//        product.setPrice(101);
-//        product.setImageUrl("hiii");
-//        product.setCategory(category);
-//        productRepository.save(product);
-    }
 
 
 

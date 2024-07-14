@@ -16,12 +16,12 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     List<Product>  laaoProductsWithId(Long id);
 
 
-//    List<Product> products;
-//    for(Product p: product)
-//        if(p.id ={} and p.title ={})
-
-
     @Query("select p from Product p where p.id = :id and  p.category.categoryName = :categoryName")
     List<Product>  getByIdAndTitle(Long id,String categoryName);
+
+//    @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
+//    Long getLastInsertedProductId();
+
+
 
 }

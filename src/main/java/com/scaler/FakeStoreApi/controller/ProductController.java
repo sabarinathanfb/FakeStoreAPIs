@@ -1,5 +1,11 @@
 package com.scaler.FakeStoreApi.controller;
 
+import com.scaler.FakeStoreApi.Mapper.ProductMapper;
+import com.scaler.FakeStoreApi.clients.authenticationclient.AuthenticationClient;
+import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.Role;
+import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.SessionStatus;
+import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.ValidateTokenRequestDto;
+import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.ValidateTokenResponseDto;
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
 import com.scaler.FakeStoreApi.exceptions.NotFoundException;
 import com.scaler.FakeStoreApi.models.Category;
@@ -8,10 +14,12 @@ import com.scaler.FakeStoreApi.repositories.ProductRepository;
 import com.scaler.FakeStoreApi.services.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,18 +29,53 @@ public class ProductController {
 
     private final ProductService productService;
     private final ProductRepository productRepository;
+    private final AuthenticationClient authenticationClient;
 
 
-    public ProductController(ProductService productService,ProductRepository productRepository) {
+    public ProductController(ProductService productService,ProductRepository productRepository,AuthenticationClient authenticationClient) {
         this.productService = productService;
         this.productRepository = productRepository;
+        this.authenticationClient = authenticationClient;
 
     }
 
 
-    @GetMapping("")
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    /* Make only admins be Able to Access all Products */
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductDTO>> getAllProducts(@Nullable @RequestHeader("AUTH_TOKEN") String token,
+                                                           @Nullable @RequestHeader("USER_ID") Long userId) {
+
+        if(token == null || userId == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        ValidateTokenResponseDto response = authenticationClient.validate(token, userId);
+
+        if (response.getSessionStatus().equals(SessionStatus.INVALID)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // validate token
+        // RestTemplate rt = new RestTRemplate();
+        //  rt.get("localhost:9090/auth/validate?)
+
+        // check if user has permissions
+        boolean isUserAdmin = false;
+        for (Role role: response.getUserDto().getRoles()) {
+            if (role.getName().equals("ADMIN")) {
+                isUserAdmin = true;
+            }
+        }
+
+        if (!isUserAdmin) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+
+        List<Product> products = productRepository.findAll();
+        List<ProductDTO> productDTOs = ProductMapper.toDTOList(products);
+
+        return new ResponseEntity<>(productDTOs,HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/{productId}")
@@ -58,39 +101,24 @@ public class ProductController {
 
     }
 
-    @PostMapping("")
-    public ResponseEntity<Product> addNewProduct(@RequestBody ProductDTO product) {
+    @PostMapping("/add")
+    public ResponseEntity<ProductDTO> addNewProduct(@RequestBody ProductDTO product) {
 
-//        Product newProduct = productService.addNewProduct(
-//                product
-//        );
+        Product newProduct = productService.addNewProduct(product);
 
-        Product newProduct = new Product();
-        newProduct.setDescription(product.getDescription());
-        newProduct.setPrice(product.getPrice());
-        newProduct.setTitle(product.getTitle());
-        newProduct.setImageUrl(product.getImage());
+        return new ResponseEntity<>(ProductMapper.toDTO(newProduct),HttpStatus.CREATED);
 
-        newProduct = productRepository.save(newProduct);
-
-        return new ResponseEntity<>(
-                newProduct,
-                HttpStatus.CREATED
-        );
     }
 
     @PatchMapping("/{productId}")
-    public Product updateProduct(@PathVariable("productId") Long productId,
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable("productId") Long productId,
                                 @RequestBody ProductDTO productDTO) {
-        Product product = new Product();
-        product.setId(productDTO.getId());
-        product.setCategory(new Category());
-        product.getCategory().setCategoryName(productDTO.getCategory());
-        product.setTitle(productDTO.getTitle());
-        product.setPrice(productDTO.getPrice());
-        product.setDescription(productDTO.getDescription());
 
-        return productService.updateProduct(productId, product);
+        Product product = ProductMapper.toProduct(productDTO);
+
+        return new ResponseEntity<>(ProductMapper.toDTO(productService.updateProduct(productId,product)),
+                HttpStatus.ACCEPTED);
+
     }
 
     @DeleteMapping("/{productId}")
