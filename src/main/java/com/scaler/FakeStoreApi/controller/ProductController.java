@@ -45,31 +45,31 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getAllProducts(@Nullable @RequestHeader("AUTH_TOKEN") String token,
                                                            @Nullable @RequestHeader("USER_ID") Long userId) {
 
-        if(token == null || userId == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        ValidateTokenResponseDto response = authenticationClient.validate(token, userId);
-
-        if (response.getSessionStatus().equals(SessionStatus.INVALID)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        // validate token
-        // RestTemplate rt = new RestTRemplate();
-        //  rt.get("localhost:9090/auth/validate?)
-
-        // check if user has permissions
-        boolean isUserAdmin = false;
-        for (Role role: response.getUserDto().getRoles()) {
-            if (role.getName().equals("ADMIN")) {
-                isUserAdmin = true;
-            }
-        }
-
-        if (!isUserAdmin) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+//        if(token == null || userId == null) {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
+//
+//        ValidateTokenResponseDto response = authenticationClient.validate(token, userId);
+//
+//        if (response.getSessionStatus().equals(SessionStatus.INVALID)) {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
+//
+//        // validate token
+//        // RestTemplate rt = new RestTRemplate();
+//        //  rt.get("localhost:9090/auth/validate?)
+//
+//        // check if user has permissions
+//        boolean isUserAdmin = false;
+//        for (Role role: response.getUserDto().getRoles()) {
+//            if (role.getName().equals("ADMIN")) {
+//                isUserAdmin = true;
+//            }
+//        }
+//
+//        if (!isUserAdmin) {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
 
 
         List<Product> products = productRepository.findAll();
@@ -79,7 +79,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getSingleProduct(@PathVariable Long productId) throws NotFoundException {
+    public ResponseEntity<ProductDTO> getSingleProduct(@PathVariable Long productId) throws NotFoundException {
 
         MultiValueMap<String,String> headers = new LinkedMultiValueMap<>();
         headers.add("auth-token","dawdjkajwdlncad");
@@ -90,13 +90,9 @@ public class ProductController {
             throw new NotFoundException("No Product with product id: " + productId);
         }
 
-        ResponseEntity<Product> response = new ResponseEntity(
-                productService.getSingleProduct(productId),
-                headers,
-                HttpStatus.NOT_FOUND
-        );
+        ProductDTO productDTO = ProductMapper.toDTO(productOptional.get());
 
-        return response;
+        return new ResponseEntity<>(productDTO,headers,HttpStatus.OK);
 
 
     }
