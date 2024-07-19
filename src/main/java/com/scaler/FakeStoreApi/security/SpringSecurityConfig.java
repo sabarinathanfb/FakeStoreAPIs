@@ -19,7 +19,7 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                                .requestMatchers("/products/all").hasAuthority("ADMIN")
+//                                .requestMatchers("/products/all").hasAuthority("ADMIN")
 //                        .requestMatchers("/messages/**").access(hasScope("message:read"))
                         .anyRequest().permitAll()
 

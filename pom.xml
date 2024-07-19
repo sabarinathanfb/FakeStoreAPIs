@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.scaler</groupId>
-	<artifactId>FakeStoreApi</artifactId>
+	<artifactId>ProductService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>FakeStoreApi</name>
 	<description>implementation of fake store APIs in Spring Boot</description>
@@ -74,6 +74,13 @@
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 			<version>3.3.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+
 
 
 

@@ -8,20 +8,21 @@ import com.scaler.FakeStoreApi.repositories.ProductRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Primary
 public class SelfProductService implements ProductService {
 
     private ProductRepository productRepository;
+    private RedisTemplate<Long, Object> redisTemplate;
 
-    public SelfProductService(ProductRepository productRepository) {
+    public SelfProductService(ProductRepository productRepository,RedisTemplate<Long, Object> redisTemplate) {
+        this.redisTemplate =redisTemplate;
         this.productRepository = productRepository;
     }
 
@@ -51,12 +52,45 @@ public class SelfProductService implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+
+        String hashKey = "PRODUCTS"; // The hash key name
+
+        // Try to get all products from Redis
+        Map<Object, Object> productsMap = redisTemplate.opsForHash().entries(1L);
+
+        List<Product> products;
+
+        if (!productsMap.isEmpty()) {
+            // Convert the map values to a list of products
+            products = new ArrayList<>();
+            for (Map.Entry<Object, Object> entry : productsMap.entrySet()) {
+                products.add((Product) entry.getValue());
+            }
+        } else {
+            // If products are not found in Redis, retrieve from the database
+            products = productRepository.findAll();
+
+            // Cache the products in Redis
+            for (Product product : products) {
+                redisTemplate.opsForHash().put( product.getId(),hashKey, product);
+            }
+        }
+
+        return products;
+
+//        return ;
     }
+
 
     @Override
     public Optional<Product> getSingleProduct(Long productId) throws NotFoundException {
-        Product product = productRepository.findProductById(productId);
+        Product product = (Product)redisTemplate.opsForHash().get(productId,"PRODUCT");
+
+        if(product != null){
+            return Optional.of(product);
+        }
+
+        product = productRepository.findProductById(productId);
 
         if (product == null) {
             throw new NotFoundException("Product Doesn't Exist");
