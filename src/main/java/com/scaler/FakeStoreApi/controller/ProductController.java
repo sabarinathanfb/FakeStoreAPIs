@@ -6,12 +6,14 @@ import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.Role;
 import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.SessionStatus;
 import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.ValidateTokenRequestDto;
 import com.scaler.FakeStoreApi.clients.authenticationclient.dtos.ValidateTokenResponseDto;
+import com.scaler.FakeStoreApi.dtos.GetProductRequestDto;
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
 import com.scaler.FakeStoreApi.exceptions.NotFoundException;
 import com.scaler.FakeStoreApi.models.Category;
 import com.scaler.FakeStoreApi.models.Product;
 import com.scaler.FakeStoreApi.repositories.ProductRepository;
 import com.scaler.FakeStoreApi.services.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -38,6 +40,30 @@ public class ProductController {
         this.authenticationClient = authenticationClient;
 
     }
+
+    @GetMapping("/pagination2")
+    public ResponseEntity<Page<ProductDTO>> getProductsByTitle(@RequestBody GetProductRequestDto request){
+
+        Page<Product> products = productService.getProductsByTitle(request.getTitle(),request.getNumberOfResults(), request.getOffset());
+
+        return new ResponseEntity<>(ProductMapper.toDTOPage(products), HttpStatus.OK);
+
+    }
+
+
+
+
+    @GetMapping("/pagination")
+    public ResponseEntity<Page<ProductDTO>> getProducts(@RequestBody GetProductRequestDto request){
+
+        Page<Product> products = productService.getProducts(request.getNumberOfResults(), request.getOffset());
+
+        return new ResponseEntity<>(ProductMapper.toDTOPage(products), HttpStatus.OK);
+
+    }
+
+
+
 
 
     /* Make only admins be Able to Access all Products */

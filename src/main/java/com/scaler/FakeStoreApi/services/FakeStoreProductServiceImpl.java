@@ -5,6 +5,7 @@ import com.scaler.FakeStoreApi.dtos.ProductDTO;
 import com.scaler.FakeStoreApi.models.Category;
 import com.scaler.FakeStoreApi.models.Product;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -53,6 +54,15 @@ public class FakeStoreProductServiceImpl implements ProductService{
 
         return product;
     }
+
+    public Page<Product> getProducts(int numberOfProducts, int offset){
+        return null;
+    }
+    public Page<Product> getProductsByTitle(String title,int numberOfProducts,int offset){
+        return null;
+    }
+
+
 
     @Override
     public List<Product> getAllProducts() {

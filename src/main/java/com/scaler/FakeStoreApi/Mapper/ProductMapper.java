@@ -3,6 +3,7 @@ package com.scaler.FakeStoreApi.Mapper;
 import com.scaler.FakeStoreApi.dtos.ProductDTO;
 import com.scaler.FakeStoreApi.models.Category;
 import com.scaler.FakeStoreApi.models.Product;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,5 +50,12 @@ public class ProductMapper {
         return products.stream()
                 .map(ProductMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public static Page<ProductDTO> toDTOPage(Page<Product> products) {
+        if (products == null) {
+            return null;
+        }
+        return products.map(ProductMapper::toDTO);
     }
 }

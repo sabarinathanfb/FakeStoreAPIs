@@ -6,6 +6,8 @@ import com.scaler.FakeStoreApi.exceptions.NotFoundException;
 import com.scaler.FakeStoreApi.models.Product;
 import com.scaler.FakeStoreApi.repositories.ProductRepository;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,6 +24,29 @@ public class SelfProductService implements ProductService {
     public SelfProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
+
+
+
+    public Page<Product> getProducts(int numberOfProducts,int offset){
+
+        //productRepository.executeQuery("Select * from products limit  offset")
+
+        Page<Product> products = productRepository.findAll(
+                PageRequest.of((offset/numberOfProducts),numberOfProducts)
+        );
+
+
+
+        return products;
+    }
+
+    public Page<Product> getProductsByTitle(String title,int numberOfProducts,int offset){
+
+
+        return productRepository.findAllByTitleContaining(title,PageRequest.of((offset/numberOfProducts),numberOfProducts));
+    }
+
+
 
 
     @Override
